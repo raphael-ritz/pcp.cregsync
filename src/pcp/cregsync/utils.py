@@ -83,3 +83,38 @@ def email2userpk(data):
         email = values['fields']['email']
         result[email] = pk
     return result.copy()
+
+def update(old, item):
+    """Helper method to update and exisiting entry in a list of dicts.
+    Called by extend for the 'additional' field.
+    We know already that 'old' contains an entry with the same key
+    as 'item'.
+    """
+    k = item['key']
+    v = item['value']
+    for entry in old:
+        if entry['key'] == k:
+            entry['value'] = v
+    return old
+        
+
+def extend(old, new):
+    """Helper method to extend a list of dicts such that the
+    key values do not get duplicated.
+    Needed to keep additional entries across updates.
+    'old' and 'new' are lists of dicts with keys 'key' and 'value'"""
+
+    existing_keys = [entry['key'] for entry in old]
+    for item in new:
+        k = item['key']
+        v = item['value']
+        if k not in existing_keys:
+            old.append(item.copy())
+        else:
+            update(old, item)
+    return old
+
+            
+        
+                
+    

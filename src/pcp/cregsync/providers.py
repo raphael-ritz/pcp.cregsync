@@ -17,7 +17,7 @@ from pcp.cregsync import config
 def prepareid(id):
     return cleanId(id)
 
-def preparedata(values, site):
+def preparedata(values, site, additional_org):
 
     logger = logging.getLogger('cregsync.providerdata')
 
@@ -40,7 +40,7 @@ def preparedata(values, site):
 
     del fields['id']
     fields['title'] = title
-    fields['additional'] = additional
+    fields['additional'] = utils.extend(additional_org, additional)
 
     return fields.copy()
 
@@ -67,7 +67,9 @@ def main(app):
             targetfolder.invokeFactory('Provider', id)
             logger.info("Added %s to the providers folder" % id)
 
-        data = preparedata(entry, site)
+        # retrieve data to extended rather than overwritten
+        additional = targetfolder[id].getAdditional()
+        data = preparedata(entry, site, additional)
         logger.debug(data)
         targetfolder[id].edit(**data)
         targetfolder[id].reindexObject()
