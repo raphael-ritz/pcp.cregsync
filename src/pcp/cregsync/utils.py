@@ -1,4 +1,4 @@
-import json
+import csv
 import logging
 import argparse
 from collections import defaultdict
@@ -70,19 +70,10 @@ def getSite(app, site_id, admin_id):
     return site
     
 
-def getData(path, model=None):
+def getData(path, filename):
     # TODO: this needs to be adjusted for CSV data
-    source = open(path,'r')
-    raw = json.load(source)
-    rct_data = defaultdict(dict)
-
-    # cast the raw data into some nested structure for easy access later
-    for item in raw:
-        rct_data[item['model']][item['pk']] = item.copy()
-    if not model:
-        return rct_data.copy()
-    else:
-        return rct_data[model].copy()
+    source = open(path+filename,'r')
+    return csv.DictReader(source)
 
 def email2userpk(data):
     """return mapping to enable user_pk lookup by email.

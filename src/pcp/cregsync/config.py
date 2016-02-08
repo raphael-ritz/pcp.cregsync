@@ -24,3 +24,15 @@ cid2dpid = {
     201:'GFZ',
 }
 
+# map creg:site keys to dp:provider keys
+# the default is to use creg keys in lower case directly
+
+sitekeys2dp = {
+    'description':'text',
+    'alarmemail':'alarm_email',
+    'emergencytel':'emergency_phone',
+    'helpdeskemail':'helpdesk_email',
+    'homeurl':'url',
+    'iprange':'ip4range',
+    'officialname':'description',
+}
