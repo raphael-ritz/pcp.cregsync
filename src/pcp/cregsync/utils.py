@@ -8,6 +8,8 @@ from Testing import makerequest
 
 from zope.component.hooks import setSite
 
+from pcp.cregsync import config
+
 
 def getArgParser():
     parser = argparse.ArgumentParser(description='The cregsync package provides scripts to '\
@@ -114,7 +116,8 @@ def extend(old, new):
             update(old, item)
     return old
 
-            
-        
+def resolveServiceType(id):
+    """Look up the service types from the config"""
+    return config.servicetypes[id]
                 
     
