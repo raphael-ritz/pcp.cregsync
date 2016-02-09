@@ -47,7 +47,7 @@ servicekeys2dp = {
     'ipaddress':'host_ip4',
     'ipv6address':'host_ip6',
     'operatingsystem':'host_os',
-    'url':'servide_url',
+    'url':'service_url',
 }
 
 # manually maintained mapping of service types

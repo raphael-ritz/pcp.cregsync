@@ -120,4 +120,34 @@ def resolveServiceType(id):
     """Look up the service types from the config"""
     return config.servicetypes[id]
                 
-    
+def resolve_creg_id(sid, portal_type, context):
+    catalog = context.portal_catalog
+    items = [e.getObject() for e in catalog(portal_type=portal_type)]
+    for item in items:
+        additional = item.getAdditional()
+        creg_id = 0
+        for entry in additional:
+            if entry['key'] == 'creg_id':
+                creg_id = entry['value']
+        if int(creg_id) == int(sid):
+            return item.UID()
+    return None
+
+def prepare_links(clinks, context):
+    """Helper method turning the RS2RSC link table from creg
+    into a dict keyed by RS uid holding a list of target RSC uids.
+    Objects to be linked have to exist already. 
+    """
+    result = defaultdict(list)
+    for entry in clinks:
+        rs_uid = resolve_creg_id(entry['SERVICEGROUP_ID'], 'RegisteredService', context)
+        if rs_uid is None:
+            print "No registered service with creg_id = '%s' found." % entry['SERVICEGROUP_ID']
+            continue
+        rsc_uid = resolve_creg_id(entry['SERVICE_ID'], 'RegisteredServiceComponent', context)
+        if rsc_uid is None:
+            print "No registered service component with creg_id = '%s' found." % entry['SERVICE_ID']
+            continue
+        result[rs_uid].append(rsc_uid)
+    return result.copy()
+        
