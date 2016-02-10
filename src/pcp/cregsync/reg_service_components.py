@@ -29,7 +29,7 @@ def getTargetFolder(site, entry):
         provider = None
     return provider
 
-def preparedata(values, site, additional_org):
+def preparedata(values, site, additional_org, extensions):
 
     logger = logging.getLogger('cregsync.servicedata')
 
@@ -56,7 +56,8 @@ def preparedata(values, site, additional_org):
                       )
 
     del fields['id']
-    fields['additional'] = utils.extend(additional_org, additional)
+    core_additionals = utils.extend(additional_org, additional)
+    fields['additional'] = utils.extend(core_additionals, extensions)
     fields['service_type'] = utils.resolveServiceType(int(fields['servicetype_id']))
     fields['title'] = ' - '.join([title, fields['service_type']])
 
@@ -72,6 +73,7 @@ def main(app):
     logger.info("Got site '%s' as '%s'" % (args.site_id, args.admin_id))
 
     creg_services = utils.getData(args.path, args.filename)   # returns a csv.DictReader instance
+    extension_properties = utils.getProperties(args.path, 'SERVICE_PROPERTIES_DATA_TABLE.csv')
 
     logger.info("Iterating over the service data")
     for entry in creg_services:
@@ -88,7 +90,8 @@ def main(app):
 
         # retrieve data to extended rather than overwritten
         additional = targetfolder[id].getAdditional()
-        data = preparedata(entry, site, additional)
+        extensions = extension_properties.get(entry['ID'], [])
+        data = preparedata(entry, site, additional, extensions)
         logger.debug(data)
         targetfolder[id].edit(**data)
         targetfolder[id].reindexObject()

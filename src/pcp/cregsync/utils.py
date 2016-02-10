@@ -73,9 +73,22 @@ def getSite(app, site_id, admin_id):
     
 
 def getData(path, filename):
-    # TODO: this needs to be adjusted for CSV data
+    """return a DictReader to iterate over the data"""
     source = open(path+filename,'r')
     return csv.DictReader(source)
+
+def getProperties(path, filename):
+    """
+    Return a dict keyed by creg:service id pointing to a 
+    list of dicts with the additional kv pairs.
+    """
+    source = open(path+filename,'r')
+    reader = csv.reader(source)
+    result = defaultdict(list)
+    for line in reader:
+        result[line[-1]].append(dict(key=line[1],value=line[2]))
+    return result
+    
 
 def email2userpk(data):
     """return mapping to enable user_pk lookup by email.
