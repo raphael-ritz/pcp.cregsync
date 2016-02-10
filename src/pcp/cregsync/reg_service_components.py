@@ -56,9 +56,9 @@ def preparedata(values, site, additional_org):
                       )
 
     del fields['id']
-    fields['title'] = title
     fields['additional'] = utils.extend(additional_org, additional)
     fields['service_type'] = utils.resolveServiceType(int(fields['servicetype_id']))
+    fields['title'] = ' - '.join([title, fields['service_type']])
 
     return fields.copy()
 
@@ -75,7 +75,7 @@ def main(app):
 
     logger.info("Iterating over the service data")
     for entry in creg_services:
-        id = prepareid(entry['HOSTNAME'])
+        id = prepareid('_'.join([entry['HOSTNAME'], entry['ID']]))
         if id is None:
             logger.warning("Couldn't generate id for ", entry)
             continue
