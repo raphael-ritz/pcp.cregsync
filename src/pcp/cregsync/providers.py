@@ -17,7 +17,7 @@ from pcp.cregsync import config
 def prepareid(id):
     return cleanId(id)
 
-def preparedata(values, site, additional_org):
+def preparedata(values, site, additional_org, email2puid):
 
     logger = logging.getLogger('cregsync.providerdata')
 
@@ -42,6 +42,24 @@ def preparedata(values, site, additional_org):
     fields['title'] = title
     fields['additional'] = utils.extend(additional_org, additional)
 
+    # link contacts
+    contact_uid = email2puid.get(fields['email'], None)
+    if contact_uid is None:
+        contact_uid = utils.fixContact(site, fields)
+    if contact_uid is None:
+        logger.warning("'%s' not found - no contact set for '%s'" \
+                       % (fields['email'], title))
+    else:
+        fields['contact'] = contact_uid
+    security_contact_uid = email2puid.get(fields['csirtemail'], None)
+    if security_contact_uid is None:
+        security_contact_uid = utils.fixContact(site, fields, security=True)
+    if security_contact_uid is None:
+        logger.warning("'%s' not found - no security contact set for '%s'" \
+                       % (fields['csirtemail'], title))
+    else:
+        fields['security_contact'] = security_contact_uid
+        
     return fields.copy()
 
 def main(app):
@@ -55,7 +73,7 @@ def main(app):
 
     targetfolder = site.providers
     creg_sites = utils.getData(args.path, args.filename)   # returns a csv.DictReader instance
-
+    email2puid = utils.email2puid(site)
         
     logger.info("Iterating over the provider data")
     for entry in creg_sites:
@@ -69,7 +87,7 @@ def main(app):
 
         # retrieve data to extended rather than overwritten
         additional = targetfolder[id].getAdditional()
-        data = preparedata(entry, site, additional)
+        data = preparedata(entry, site, additional, email2puid)
         logger.debug(data)
         targetfolder[id].edit(**data)
         targetfolder[id].reindexObject()

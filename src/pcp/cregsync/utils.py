@@ -3,6 +3,7 @@ import logging
 import argparse
 from collections import defaultdict
 
+from Products.PlonePAS.utils import cleanId
 from AccessControl.SecurityManagement import newSecurityManager
 from Testing import makerequest
 
@@ -89,6 +90,67 @@ def getProperties(path, filename):
         result[line[-1]].append(dict(key=line[1],value=line[2]))
     return result
     
+def email2puid(site):
+    """
+    Return a mapping email -> UID for all exisitng Person objects.
+    If an email address occurs several times only the first hit is
+    recorded and a warning is logged.
+    """
+    logger = logging.getLogger('contacts')
+    result = {}
+    for person in site.people.contentValues():
+        email = person.getEmail()
+        uid =  person.UID()
+        if email and email in result.keys():
+            logger.warning("'%s' already found - skipping" % email)
+            continue
+        logger.debug("Mapping '%s' to '%s'" % (email, uid))
+        result[email] = uid
+    return result.copy()
+
+def makeGenericContact(site, fields, security=False):
+    logger = logging.getLogger('contacts')
+    provider_id = fields['shortname']
+    if security:
+        email = fields['csirtemail']
+        phone = {'type':'Office', 'number':fields['csirttel']}
+        lastname = "Security Contact"
+    else:
+        email = fields['email']
+        phone = {'type':'Office','number':fields['telephone']}
+        lastname = "Contact"
+    title = ' '.join([provider_id, lastname])
+    id = cleanId(title)
+    description = "Generic %s details for %s" % (lastname.lower(), provider_id)
+    data = {'title':title,
+            'description':description,
+            'name':dict(firstname=provider_id, lastname=lastname),
+            'email':email,
+            'phone':[phone],
+        }
+    site.people.invokeFactory('Person', id)
+    logger.info("Added %s to the people folder" % id)
+    site.people[id].edit(**data)
+    logger.debug(data)
+    logger.info("Updated %s in the people folder" % id)
+    site.people[id].reindexObject()
+    return site.people[id].UID()
+    
+
+def fixContact(site, fields, security=False):
+    """
+    Generate a generic contact if possible and return its UID.
+    Returns None otherwise.
+    """
+    if security:
+        email = fields['csirtemail']
+    else:
+        email = fields['email']
+    if 'eudat-support' in email:
+        return makeGenericContact(site, fields)
+    if 'eudat-security' in email:
+        return makeGenericContact(site, fields, security=True)
+    return None
 
 def email2userpk(data):
     """return mapping to enable user_pk lookup by email.
