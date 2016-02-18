@@ -82,7 +82,11 @@ def main(app):
         
     logger.info("Iterating over the provider data")
     for entry in creg_sites:
-        id = prepareid(entry['SHORTNAME'])
+        shortname = entry['SHORTNAME']
+        # our one hard-coded exception here:
+        if shortname == 'RZG':
+            shortname = "mpcdf"
+        id = prepareid(shortname)
         if id is None:
             logger.warning("Couldn't generate id for ", values)
             continue
