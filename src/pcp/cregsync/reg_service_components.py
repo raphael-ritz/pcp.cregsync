@@ -29,7 +29,7 @@ def getTargetFolder(site, entry):
         provider = None
     return provider
 
-def preparedata(values, site, additional_org, extensions):
+def preparedata(values, site, additional_org, extensions, email2puid):
 
     logger = logging.getLogger('cregsync.servicedata')
 
@@ -60,6 +60,14 @@ def preparedata(values, site, additional_org, extensions):
     fields['additional'] = utils.extend(core_additionals, extensions)
     fields['service_type'] = utils.resolveServiceType(int(fields['servicetype_id']))
     fields['title'] = ' - '.join([title, fields['service_type']])
+    email = config.creg2dp_email.get(fields['email'], fields['email'])
+    contact_uid = email2puid.get(email, None)
+    if contact_uid is None:
+        contact_uid = utils.fixContact(site, fields, contact_type='support')
+    if contact_uid is None:
+        logger.warning("No contact with email address '%s' found." % fields['email'])
+    else:
+        fields['contacts'] = [contact_uid]
 
     return fields.copy()
 
@@ -74,6 +82,7 @@ def main(app):
 
     creg_services = utils.getData(args.path, args.filename)   # returns a csv.DictReader instance
     extension_properties = utils.getProperties(args.path, 'SERVICE_PROPERTIES_DATA_TABLE.csv')
+    email2puid = utils.email2puid(site)
 
     logger.info("Iterating over the service data")
     for entry in creg_services:
@@ -91,7 +100,7 @@ def main(app):
         # retrieve data to extended rather than overwritten
         additional = targetfolder[id].getAdditional()
         extensions = extension_properties.get(entry['ID'], [])
-        data = preparedata(entry, site, additional, extensions)
+        data = preparedata(entry, site, additional, extensions, email2puid)
         logger.debug(data)
         targetfolder[id].edit(**data)
         targetfolder[id].reindexObject()

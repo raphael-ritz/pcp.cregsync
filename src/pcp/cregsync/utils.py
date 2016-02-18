@@ -108,13 +108,21 @@ def email2puid(site):
         result[email] = uid
     return result.copy()
 
-def makeGenericContact(site, fields, security=False):
+def makeGenericContact(site, fields, contact_type='generic'):
     logger = logging.getLogger('contacts')
-    provider_id = fields['shortname']
-    if security:
+    try:
+        provider_id = fields['shortname']
+    except KeyError:
+        parentsite_id = fields['parentsite_id']
+        provider_id = config.cid2dpid[int(parentsite_id)]
+    if contact_type == 'security':
         email = fields['csirtemail']
         phone = {'type':'Office', 'number':fields['csirttel']}
         lastname = "Security Contact"
+    elif contact_type == 'support':
+        email = fields['email']
+        phone = {}
+        lastname = "Support Contact"
     else:
         email = fields['email']
         phone = {'type':'Office','number':fields['telephone']}
@@ -128,6 +136,8 @@ def makeGenericContact(site, fields, security=False):
             'email':email,
             'phone':[phone],
         }
+    if id in site.people.objectIds():
+        return site.people[id].UID()
     site.people.invokeFactory('Person', id)
     logger.info("Added %s to the people folder" % id)
     site.people[id].edit(**data)
@@ -137,14 +147,16 @@ def makeGenericContact(site, fields, security=False):
     return site.people[id].UID()
     
 
-def fixContact(site, fields, security=False):
+def fixContact(site, fields, contact_type='generic'):
     """
     Generate a generic contact if possible and return its UID.
     Returns None otherwise.
     """
-    if security:
+    if contact_type == 'security':
         email = fields['csirtemail']
-        return makeGenericContact(site, fields, security=True)
+        return makeGenericContact(site, fields, contact_type='security')
+    elif contact_type == 'support':
+        return makeGenericContact(site, fields, contact_type='support')
     else:
         email = fields['email']
         return makeGenericContact(site, fields)

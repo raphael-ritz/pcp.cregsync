@@ -58,7 +58,7 @@ def preparedata(values, site, additional_org, email2puid):
     s_email = config.creg2dp_email.get(fields['csirtemail'],fields['csirtemail'])
     security_contact_uid = email2puid.get(s_email, None)
     if security_contact_uid is None:
-        security_contact_uid = utils.fixContact(site, fields, security=True)
+        security_contact_uid = utils.fixContact(site, fields, contact_type='security')
     if security_contact_uid is None:
         logger.warning("'%s' not found - no security contact set for '%s'" \
                        % (fields['csirtemail'], title))

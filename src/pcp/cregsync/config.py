@@ -89,4 +89,9 @@ servicetypes = {
 creg2dp_email = {
     'stranak@ufal.mff.cuni.cz':'pavel.stranak@gmail.com',
     'jkennedy@rzg.mpg.de':'john.kennedy@mpcdf.mpg.de',
+    'fruwl@rzg.mpg.de':'elena.erastova@rzg.mpg.de',
+    'm.olchowik@ed.ac.uk':'m.olchowik@epcc.ed.ac.uk',
+    'thierry.toutain@usit.uio.no':'toutain@usit.uio.no',
+    'fek@rzg.mpg.de':'florian.kaiser@rzg.mpg.de',
+    'florian.kaiser@rzg.mpg.de':'fek@rzg.mpg.de',
 }
