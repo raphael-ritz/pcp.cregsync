@@ -43,7 +43,10 @@ def preparedata(values, site, additional_org, email2puid):
     fields['additional'] = utils.extend(additional_org, additional)
 
     # link contacts
-    contact_uid = email2puid.get(fields['email'], None)
+    # first map exceptions
+    email = config.creg2dp_email.get(fields['email'],fields['email'])
+    # then look up corresponding UID
+    contact_uid = email2puid.get(email, None)
     if contact_uid is None:
         contact_uid = utils.fixContact(site, fields)
     if contact_uid is None:
@@ -51,7 +54,9 @@ def preparedata(values, site, additional_org, email2puid):
                        % (fields['email'], title))
     else:
         fields['contact'] = contact_uid
-    security_contact_uid = email2puid.get(fields['csirtemail'], None)
+    # same for the security contact
+    s_email = config.creg2dp_email.get(fields['csirtemail'],fields['csirtemail'])
+    security_contact_uid = email2puid.get(s_email, None)
     if security_contact_uid is None:
         security_contact_uid = utils.fixContact(site, fields, security=True)
     if security_contact_uid is None:

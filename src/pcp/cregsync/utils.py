@@ -144,17 +144,15 @@ def fixContact(site, fields, security=False):
     """
     if security:
         email = fields['csirtemail']
+        return makeGenericContact(site, fields, security=True)
     else:
         email = fields['email']
-    if 'eudat-support' in email:
         return makeGenericContact(site, fields)
-    if 'eudat-security' in email:
-        return makeGenericContact(site, fields, security=True)
     return None
 
 def email2userpk(data):
     """return mapping to enable user_pk lookup by email.
-    Assumes 'data' to hold the 'auth.user' data"""
+    Assumes 'data' to hold the 'auth.user' data from RCT"""
     result = {}
     for pk, values in data.items():
         email = values['fields']['email']

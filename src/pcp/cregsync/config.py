@@ -17,7 +17,7 @@ cid2dpid = {
     17:'INGV',
     18:'JUELICH',
     19:'UCL',
-    20:'SNIC',  # or should this be called PDC?
+    20:'PDC',
     21:'BSC',
     161:'GRNET',
     181:'Trust--IT',
@@ -82,4 +82,11 @@ servicetypes = {
     75:"b2access.myproxy",
     76:"b2access.crowd",
     77:"eudat.helpdesk.rt",
+}
+
+
+# email mapping for the few exceptions we have
+creg2dp_email = {
+    'stranak@ufal.mff.cuni.cz':'pavel.stranak@gmail.com',
+    'jkennedy@rzg.mpg.de':'john.kennedy@mpcdf.mpg.de',
 }
