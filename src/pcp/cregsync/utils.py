@@ -21,9 +21,9 @@ def getArgParser():
     parser.add_argument("-p", "--path", default="data/GOCDB/gocdb_54_dump/", 
                         help="relative path to the input data directory "\
                         "(default: 'data/GOCDB/gocdb_54_dump/')")
-    parser.add_argument("-f", "--filename", default="SITES_DATA_TABLE.csv", 
+    parser.add_argument("-f", "--filename", default="", 
                         help="name of the input data file "\
-                        "(default: 'SITES_DATA_TABLE.csv')")
+                        "(default: '' - aka not set)")
     parser.add_argument("-a", "--admin_id", default="admin", 
                         help="all changes and additions will be shown as from this user"\
                         " (default: 'admin')")
