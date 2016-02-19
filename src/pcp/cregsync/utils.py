@@ -58,7 +58,9 @@ def getLogger(logfilename='var/log/cregsync.log'):
 def getSite(app, site_id, admin_id):
     app = makerequest.makerequest(app)
     admin = app.acl_users.getUser(admin_id)
-    admin = admin.__of__(app.acl_users)
+    if admin is None:
+        admin = app[site_id].acl_users.getUser(admin_id)
+    admin = admin.__of__(app[site_id].acl_users)
     newSecurityManager(None, admin)
 
     site = app.get(site_id, None)
