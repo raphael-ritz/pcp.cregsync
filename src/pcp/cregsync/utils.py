@@ -101,7 +101,7 @@ def email2puid(site):
     logger = logging.getLogger('contacts')
     result = {}
     for person in site.people.contentValues():
-        email = person.getEmail()
+        email = person.getEmail().lower()
         uid =  person.UID()
         if email and email in result.keys():
             logger.warning("'%s' already found - skipping" % email)

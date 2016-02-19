@@ -17,7 +17,7 @@ from pcp.cregsync import config
 def prepareid(id):
     return cleanId(id)
 
-def preparedata(values, site, additional_org):
+def preparedata(values, site, additional_org, email2puid):
 
     logger = logging.getLogger('cregsync.regservcedata')
 
@@ -40,7 +40,14 @@ def preparedata(values, site, additional_org):
     del fields['id']
     fields['title'] = title
     fields['additional'] = utils.extend(additional_org, additional)
-
+    email = config.creg2dp_email.get(fields['email'].lower(), fields['email'])
+    contact_uid = email2puid.get(email.lower(), None)
+#    if contact_uid is None:
+#        contact_uid = utils.fixContact(site, fields, contact_type='support')
+    if contact_uid is None:
+        logger.warning("No contact with email address '%s' found." % fields['email'])
+    else:
+        fields['contact'] = contact_uid
     return fields.copy()
 
 def main(app):
@@ -54,7 +61,7 @@ def main(app):
 
     targetfolder = site.operations
     creg_services = utils.getData(args.path, args.filename)   # returns a csv.DictReader instance
-
+    email2puid = utils.email2puid(site)
         
     logger.info("Iterating over the registered services data")
     for entry in creg_services:
@@ -68,7 +75,7 @@ def main(app):
 
         # retrieve data to extended rather than overwritten
         additional = targetfolder[id].getAdditional()
-        data = preparedata(entry, site, additional)
+        data = preparedata(entry, site, additional, email2puid)
         logger.debug(data)
         targetfolder[id].edit(**data)
         targetfolder[id].reindexObject()
