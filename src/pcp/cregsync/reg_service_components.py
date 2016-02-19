@@ -58,8 +58,9 @@ def preparedata(values, site, additional_org, extensions, email2puid):
     del fields['id']
     core_additionals = utils.extend(additional_org, additional)
     fields['additional'] = utils.extend(core_additionals, extensions)
-    fields['service_type'] = utils.resolveServiceType(int(fields['servicetype_id']))
-    fields['title'] = ' - '.join([title, fields['service_type']])
+    fields['service_type'] = str(fields['servicetype_id'])
+    service_type_title = utils.getSTT(fields['servicetype_id'], site)
+    fields['title'] = ' - '.join([title, service_type_title])
     email = config.creg2dp_email.get(fields['email'], fields['email'])
     contact_uid = email2puid.get(email, None)
     if contact_uid is None:

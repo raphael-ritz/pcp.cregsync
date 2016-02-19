@@ -235,4 +235,8 @@ def prepare_links(clinks, context):
             continue
         result[rs_uid].append(rsc_uid)
     return result.copy()
-        
+
+def getSTT(id, context):
+    """Look up the title of the term specified by id in the service types vocabulary"""
+    vocab = context.portal_vocabularies['service_types']
+    return vocab[id].Title()
