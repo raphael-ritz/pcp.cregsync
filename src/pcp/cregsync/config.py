@@ -8,7 +8,7 @@ cid2dpid = {
     8:'SURFsara',
     9:'UiO',
     10:'KIT',
-    11:'mpcdf',
+    11:'MPCDF',
     12:'EPCC',
     13:'MPIPL',
     14:'PSNC',

@@ -85,7 +85,7 @@ def main(app):
         shortname = entry['SHORTNAME']
         # our one hard-coded exception here:
         if shortname == 'RZG':
-            shortname = "mpcdf"
+            shortname = "MPCDF"
         id = prepareid(shortname)
         if id is None:
             logger.warning("Couldn't generate id for ", values)
