@@ -45,7 +45,7 @@ def preparedata(values, site, additional_org, email2puid):
 #    if contact_uid is None:
 #        contact_uid = utils.fixContact(site, fields, contact_type='support')
     if contact_uid is None:
-        logger.warning("No contact with email address '%s' found." % fields['email'])
+        logger.warning("No contact with email address '%s' found." % fields['email'].lower())
     else:
         fields['contact'] = contact_uid
     return fields.copy()
