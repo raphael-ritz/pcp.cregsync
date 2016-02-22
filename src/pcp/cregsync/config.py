@@ -91,6 +91,7 @@ creg2dp_email = {
     'jkennedy@rzg.mpg.de':'john.kennedy@mpcdf.mpg.de',
     'johannes.reetz@rzg.mpg.de':'johannes.reetz@mpcdf.mpg.de',
     'marion.cadolle@rzg.mpg.de':'marion.cadolle@mpcdf.mpg.de',
+    'marion.cadolle@mpcdf.mpg.de':'marion.cadolle@rzg.mpg.de',
     'fruwl@rzg.mpg.de':'elena.erastova@rzg.mpg.de',
     'm.olchowik@ed.ac.uk':'m.olchowik@epcc.ed.ac.uk',
     'thierry.toutain@usit.uio.no':'toutain@usit.uio.no',
