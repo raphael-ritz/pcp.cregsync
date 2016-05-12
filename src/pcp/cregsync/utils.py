@@ -1,4 +1,5 @@
 import csv
+import json
 import logging
 import argparse
 from collections import defaultdict
@@ -79,6 +80,12 @@ def getData(path, filename):
     """return a DictReader to iterate over the data"""
     source = open(path+filename,'r')
     return csv.DictReader(source)
+
+def getServiceData(path, filename):
+    """return a list of dictionaries with the service data"""
+    source = open(path+filename,'r')
+    raw = json.load(source)
+    return raw['data']['services']
 
 def getProperties(path, filename):
     """

@@ -97,4 +97,5 @@ creg2dp_email = {
     'thierry.toutain@usit.uio.no':'toutain@usit.uio.no',
     'fek@rzg.mpg.de':'florian.kaiser@rzg.mpg.de',
     'florian.kaiser@rzg.mpg.de':'fek@rzg.mpg.de',
+    'willem@clarin.eu':'willem.elbers@mpi.nl',
 }
