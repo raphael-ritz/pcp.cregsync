@@ -63,6 +63,49 @@ def preparedata(values, site, additional_org, email2puid):
         
     return fields.copy()
 
+def flattenlinks(data):
+    """Unpack and inline the embedded links"""
+    for field in config.link_fields:
+        link = data[field]['related']['href']
+        data[field] = link
+    details_link = data['service_details']['links']['self']
+    data['service_details']['links'] = details_link
+    return data
+
+def resolveDependencies(site, data):
+    """Resolve dependencies by looking up the UIDs of the respective
+    services. It is assumed that the services are there and can be
+    looked up by name in the 'catalog' folder."""
+    deps = data['dependencies']['services']
+    if not deps:
+        data['dependencies'] = []
+    else:
+        dependencies = []
+        for dep in deps:
+            name = dep['service']['name']
+            uid = site['catalog'][name].UID()
+            dependencies.append(uid)
+        data['dependencies'] = dependencies
+    return data
+
+def addDetails(site, parent, data, logger):
+    """Adding service details"""
+    if not 'details' in parent.objectIds():
+        parent.invokeFactory('Service Details', 'details')
+        logger.info("Adding 'details' to '%s'" % parent.getId())
+    details = parent.details
+    data = flattenlinks(data)
+    data = resolveDependencies(site, data)
+    data['identifiers'] = [{'type':'spmt_uid',
+                            'value': data['uuid']},
+                       ]
+    details.edit(**data)
+    details.reindexObject()
+    site.portal_repository.save(obj=details, 
+                                comment="Synchronization from SPMT")
+    logger.info("Updated 'details' of '%s'" % parent.getId())
+    
+
 def main(app):
     argparser = utils.getArgParser()
     logger = utils.getLogger('var/log/cregsync_services.log')
@@ -97,6 +140,12 @@ def main(app):
         site.portal_repository.save(obj=targetfolder[id], 
                                     comment="Synchronization from SPMT")
         logger.info("Updated %s in the 'catalog' folder" % id)
+        try:
+            data = entry['service_details_list']['service_details'][0]  
+            # we assume there is at most one
+            addDetails(site, targetfolder[id], data, logger)
+        except IndexError:
+            pass
 
     if not args.dry:
         logger.info("Committing changes to database")

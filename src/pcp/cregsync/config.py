@@ -99,3 +99,14 @@ creg2dp_email = {
     'florian.kaiser@rzg.mpg.de':'fek@rzg.mpg.de',
     'willem@clarin.eu':'willem.elbers@mpi.nl',
 }
+
+link_fields = [
+    'usage_policy_link',
+    'user_documentation_link',
+    'operations_documentation_link',
+    'monitoring_link',
+    'accounting_link',
+    'business_continuity_plan_link',
+    'disaster_recovery_plan_url',
+    'decommissioning_procedure_url',
+    ]
