@@ -80,12 +80,12 @@ def resolveDependencies(site, data):
     looked up by name in the 'catalog' folder."""
     deps = data['dependencies_list']['services']
     if not deps:
-        data['dependencies_list'] = []
+        data['dependencies'] = []
     else:
         dependencies = []
         for dep in deps:
             name = dep['service']['name']
-            uid = site['catalog'][name].UID()
+            uid = site['catalog'][cleanId(name)].UID()
             dependencies.append(uid)
         data['dependencies'] = dependencies
     return data
