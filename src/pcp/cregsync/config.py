@@ -107,6 +107,6 @@ link_fields = [
     'monitoring_link',
     'accounting_link',
     'business_continuity_plan_link',
-    'disaster_recovery_plan_url',
-    'decommissioning_procedure_url',
+    'disaster_recovery_plan_link',
+    'decommissioning_procedure_link',
     ]

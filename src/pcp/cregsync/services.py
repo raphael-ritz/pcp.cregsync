@@ -70,17 +70,17 @@ def flattenlinks(data):
     for field in config.link_fields:
         link = data[field]['related']['href']
         data[field] = link
-    details_link = data['service_details']['links']['self']
-    data['service_details']['links'] = details_link
+    details_link = data['links']['self']
+    data['links'] = details_link
     return data
 
 def resolveDependencies(site, data):
     """Resolve dependencies by looking up the UIDs of the respective
     services. It is assumed that the services are there and can be
     looked up by name in the 'catalog' folder."""
-    deps = data['dependencies']['services']
+    deps = data['dependencies_list']['services']
     if not deps:
-        data['dependencies'] = []
+        data['dependencies_list'] = []
     else:
         dependencies = []
         for dep in deps:
