@@ -36,6 +36,7 @@ setup(name='pcp.cregsync',
       install_requires=[
           'setuptools',
           # -*- Extra requirements: -*-
+          'requests',
       ],
       entry_points="""
       # -*- Entry points: -*-

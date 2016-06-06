@@ -2,6 +2,7 @@ import csv
 import json
 import logging
 import argparse
+import requests
 from collections import defaultdict
 
 from Products.PlonePAS.utils import cleanId
@@ -249,3 +250,17 @@ def getSTT(id, context):
     """Look up the title of the term specified by id in the service types vocabulary"""
     vocab = context.portal_vocabularies['service_types']
     return vocab[id].Title()
+
+# interact with SPMT
+
+def getDataFromSPMT(url):
+    """Returns the payload from url or None.
+    Never fails."""
+    
+    r = requests.get(url)
+    d = json.loads(r.content)
+    try:
+        return d['data']
+    except KeyError:
+        # TODO add logging
+        return None

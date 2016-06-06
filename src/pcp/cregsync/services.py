@@ -36,8 +36,10 @@ def preparedata(values, site, additional_org, email2puid):
     fields['service_complete_link'] = scl
     fields['identifiers'] = identifiers
     # link contacts
+    contact_url = fields['contact_information']['links']['self']
     # first map exceptions
-    contact_email = fields['contact_information']['email']
+    contact_data = utils.getDataFromSPMT(contact_url)
+    contact_email = contact_data['external_contact_information']['email']
     email = config.creg2dp_email.get(contact_email,contact_email)
     # then look up corresponding UID
     contact_uid = email2puid.get(email, None)
