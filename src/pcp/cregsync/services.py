@@ -90,12 +90,59 @@ def resolveDependencies(site, data):
         data['dependencies'] = dependencies
     return data
 
+def addImplementation(site, component, data, logger):
+    """Adding an implementation to a service component"""
+    logger.debug("addImplemenation called with this data: '%s'" % data)
+    id = cleanId(data['name'])
+    if id not in component.contentIds():
+        component.invokeFactory('ServiceComponentImplementation', id)
+        logger.info("Adding service component implementation '%s' to '%s'" % (id, component.Title()))
+    implementation = component[id]
+    data['title'] = component.Title() + ' implementation: ' + data['name']
+    data['identifiers'] = [{'type':'spmt_uid',
+                            'value': data['uuid']},
+                       ]
+    implementation.edit(**data)
+    implementation.reindexObject()
+    site.portal_repository.save(obj=implementation, 
+                                comment="Synchronization from SPMT")
+    logger.info("Updated '%s': implementation of '%s'" % (data['name'], component.Title()))    
+
+def addComponent(service, site, data, logger):
+    """Adding a service component to 'service' described by 'data'"""
+    logger.debug("addComponent called with this data: '%s'" % data)
+    id = cleanId(data['name'])
+    if id not in service.contentIds():
+        service.invokeFactory('ServiceComponent', id)
+        logger.info("Adding service component '%s' to '%s'" % (id, service.Title()))
+    component = service[id]
+    data['title'] = "Service component '%s'" % data['name']
+    data['identifiers'] = [{'type':'spmt_uid',
+                            'value': data['uuid']},
+                       ]
+    component.edit(**data)
+    component.reindexObject()
+    site.portal_repository.save(obj=component, 
+                                comment="Synchronization from SPMT")
+    logger.info("Updated '%s' component of '%s'" % (data['name'], service.Title()))
+    implementations_data = utils.getDataFromSPMT(data['service_component_implementations_link']['related']['href'])
+    # print implementations_data
+    implementations = implementations_data['service_component_implementations_list']['service_component_implementations']
+    if not implementations:
+        logger.info("No implemenations found for '%s'" % data['title'])
+        return
+    for implementation in implementations:
+        addImplementation(site, component, implementation, logger)
+    
+    
 def addDetails(site, parent, data, logger):
     """Adding service details"""
     if not 'details' in parent.objectIds():
         parent.invokeFactory('Service Details', 'details')
         logger.info("Adding 'details' to '%s'" % parent.getId())
     details = parent.details
+    data['title'] = 'Service Details'
+    data['description'] = 'Details of the %s service' % parent.Title()
     data = flattenlinks(data)
     data = resolveDependencies(site, data)
     data['identifiers'] = [{'type':'spmt_uid',
@@ -106,6 +153,16 @@ def addDetails(site, parent, data, logger):
     site.portal_repository.save(obj=details, 
                                 comment="Synchronization from SPMT")
     logger.info("Updated 'details' of '%s'" % parent.getId())
+    # adding service components if any
+    full_data = utils.getDataFromSPMT(data['links'])
+    scl = full_data.get('service_components_list', None)
+    if scl is None:
+        logger.info('No service components found for %s' % parent.Title())
+        return None
+    for sc in scl['service_components']:
+        logger.info('Adding service component to %s' % parent.Title())
+        addComponent(parent, site, sc['component'], logger)
+         
     
 
 def main(app):
