@@ -90,6 +90,30 @@ def resolveDependencies(site, data):
         data['dependencies'] = dependencies
     return data
 
+def addImplementationDetails(site, impl, data, logger):
+    """Adding implementation details to a service component implementation"""
+    logger.debug("addImplemenationDetails called with this data: '%s'" % data)
+    id = cleanId('version-' + data['version'])
+    if id not in impl.contentIds():
+        impl.invokeFactory('ServiceComponentImplementationDetails', id)
+        logger.info("Adding service component implementation details '%s' to '%s'" % (id, impl.Title()))
+    details = impl[id]
+    data['title'] = 'Version ' + data['version']
+    data['description'] = 'Implementation details of ' + impl.Title() + ': version ' + data['version']
+    data['identifiers'] = [{'type':'spmt_uid',
+                            'value': data['uuid']},
+                       ]
+    raw_config_data = data['configuration_parameters']
+    config_items = raw_config_data.splitlines()
+    keys = [item.split()[0] for item in config_items]
+    data['configuration_parameters'] = keys
+    details.edit(**data)
+    details.reindexObject()
+    site.portal_repository.save(obj=details, 
+                                comment="Synchronization from SPMT")
+    logger.info("Updated '%s': implementation of '%s'" % (data['title'], impl.Title()))    
+
+
 def addImplementation(site, component, data, logger):
     """Adding an implementation to a service component"""
     logger.debug("addImplemenation called with this data: '%s'" % data)
@@ -106,7 +130,15 @@ def addImplementation(site, component, data, logger):
     implementation.reindexObject()
     site.portal_repository.save(obj=implementation, 
                                 comment="Synchronization from SPMT")
-    logger.info("Updated '%s': implementation of '%s'" % (data['name'], component.Title()))    
+    logger.info("Updated '%s': implementation of '%s'" % (data['name'], component.Title()))
+    details_data = utils.getDataFromSPMT(data['component_implementation_details_link']['related']['href'])
+    details = details_data['service_component_implementation_details_list']['service_component_implementation_details']
+    if not details:
+        logger.info("No implemenation details found for '%s'" % data['title'])
+        return
+    for detail in details:
+        addImplementationDetails(site, implementation, detail, logger)
+    
 
 def addComponent(service, site, data, logger):
     """Adding a service component to 'service' described by 'data'"""
