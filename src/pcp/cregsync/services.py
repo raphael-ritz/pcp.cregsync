@@ -231,7 +231,7 @@ def main(app):
         site.portal_repository.save(obj=targetfolder[id], 
                                     comment="Synchronization from SPMT")
         logger.info("Updated %s in the 'catalog' folder" % id)
-        if args.core_only: continue
+        if args.top: continue
         try:
             data = entry['service_details_list']['service_details'][0]  
             # we assume there is at most one
