@@ -29,6 +29,8 @@ def getArgParser():
     parser.add_argument("-a", "--admin_id", default="admin", 
                         help="all changes and additions will be shown as from this user"\
                         " (default: 'admin')")
+    parser.add_argument("-t", "--top", action='store_true',
+                        help="Sync only the top-level service - no details")
     parser.add_argument("-d", "--dry", action='store_true',
                         help="dry run aka nothing is saved to the database")
     parser.add_argument("-c", "--command", 
