@@ -20,15 +20,15 @@ def getArgParser():
                                      'the data project coordination portal.')
     parser.add_argument("-s", "--site_id", default="pcp", 
                         help="internal id of the Plone site object (default: 'pcp')")
-    parser.add_argument("-p", "--path", default="data/GOCDB/gocdb_54_dump/", 
+    parser.add_argument("-p", "--path", default="data/GOCDB/20160726/", 
                         help="relative path to the input data directory "\
-                        "(default: 'data/GOCDB/gocdb_54_dump/')")
+                        "(default: 'data/GOCDB/20160726/')")
     parser.add_argument("-f", "--filename", default="", 
                         help="name of the input data file "\
                         "(default: '' - aka not set)")
-    parser.add_argument("-a", "--admin_id", default="admin", 
+    parser.add_argument("-a", "--admin_id", default="creg", 
                         help="all changes and additions will be shown as from this user"\
-                        " (default: 'admin')")
+                        " (default: 'creg')")
     parser.add_argument("-t", "--top", action='store_true',
                         help="Sync only the top-level service - no details")
     parser.add_argument("-d", "--dry", action='store_true',
