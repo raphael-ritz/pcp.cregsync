@@ -13,6 +13,7 @@ from Products.PlonePAS.utils import cleanId
 from pcp.cregsync import utils
 from pcp.cregsync import config
 
+SPMT_BASE = 'sp.eudat.eu'
 
 def prepareid(id):
     return cleanId(id)
@@ -33,6 +34,8 @@ def preparedata(values, site, additional_org, email2puid):
 
     fields['title'] = title
     fields['description'] = fields['description_external']
+    if 'localhost' in scl:
+        scl = scl.replace('localhost', SPMT_BASE)
     fields['service_complete_link'] = scl
     fields['identifiers'] = identifiers
     # link contacts
@@ -104,9 +107,12 @@ def addImplementationDetails(site, impl, data, logger):
                             'value': data['uuid']},
                        ]
     raw_config_data = data['configuration_parameters']
-    config_items = raw_config_data.splitlines()
-    keys = [item.split()[0] for item in config_items]
-    data['configuration_parameters'] = keys
+    if raw_config_data is not None:        
+        config_items = raw_config_data.splitlines()
+        keys = [item.split()[0] for item in config_items]
+        data['configuration_parameters'] = keys
+    else:
+        data['configuration_parameters'] = []
     details.edit(**data)
     details.reindexObject()
     site.portal_repository.save(obj=details, 

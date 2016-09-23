@@ -13,6 +13,8 @@ from zope.component.hooks import setSite
 
 from pcp.cregsync import config
 
+SPMT_BASE = 'sp.eudat.eu'
+
 
 def getArgParser():
     parser = argparse.ArgumentParser(description='The cregsync package provides scripts to '\
@@ -258,7 +260,8 @@ def getSTT(id, context):
 def getDataFromSPMT(url):
     """Returns the payload from url or None.
     Never fails."""
-    
+    if 'localhost' in url:
+        url = url.replace('localhost', SPMT_BASE)  
     r = requests.get(url)
     d = json.loads(r.content)
     try:
