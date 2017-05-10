@@ -40,20 +40,21 @@ def preparedata(values, site, additional_org, email2puid):
     fields['identifiers'] = identifiers
     # link contacts
     contact_url = fields['contact_information']['links']['self']
-    # first map exceptions
-    contact_data = utils.getDataFromSPMT(contact_url)
-    contact_email = contact_data['external_contact_information']['email']
-    email = config.creg2dp_email.get(contact_email,contact_email)
-    # then look up corresponding UID
-    contact_uid = email2puid.get(email, None)
-#    if contact_uid is None:
-#        fields['email'] = contact_email
-#        contact_uid = utils.fixContact(site, fields)
-    if contact_uid is None:
-        logger.warning("'%s' not found - no contact set for '%s'" \
-                       % (contact_email, title))
-    else:
-        fields['contact'] = contact_uid
+    if contact_url:
+        # first map exceptions
+        contact_data = utils.getDataFromSPMT(contact_url)
+        contact_email = contact_data['external_contact_information']['email']
+        email = config.creg2dp_email.get(contact_email,contact_email)
+        # then look up corresponding UID
+        contact_uid = email2puid.get(email, None)
+        #    if contact_uid is None:
+        #        fields['email'] = contact_email
+        #        contact_uid = utils.fixContact(site, fields)
+        if contact_uid is None:
+            logger.warning("'%s' not found - no contact set for '%s'" \
+                           % (contact_email, title))
+        else:
+            fields['contact'] = contact_uid
     # same for the service owner
     owner_email = fields['service_owner']['email']
     o_email = config.creg2dp_email.get(owner_email,owner_email)
