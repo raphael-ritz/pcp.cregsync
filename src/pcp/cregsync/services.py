@@ -201,7 +201,10 @@ def addDetails(site, parent, data, logger):
     logger.info("Updated 'details' of '%s'" % parent.getId())
     # adding service components if any
     full_data = utils.getDataFromSPMT(data['links'])
-    scl = full_data.get('service_components_list', None)
+    try:
+        scl = full_data.get('service_components_list', None)
+    except AttributeError:
+        scl = None
     if scl is None:
         logger.info('No service components found for %s' % parent.Title())
         return None
