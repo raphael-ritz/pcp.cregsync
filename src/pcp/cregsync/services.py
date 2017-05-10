@@ -59,16 +59,20 @@ def preparedata(values, site, additional_org, email2puid):
         else:
             fields['contact'] = contact_uid
     # same for the service owner
-    owner_email = fields['service_owner']['email']
-    o_email = config.creg2dp_email.get(owner_email,owner_email)
-    owner_uid = email2puid.get(o_email, None)
-#    if owner_uid is None:
-#        owner_uid = utils.fixContact(site, fields, contact_type='security')
-    if owner_uid is None:
-        logger.warning("'%s' not found - no service owner set for '%s'" \
-                       % (owner_email, title))
-    else:
-        fields['service_owner'] = owner_uid
+    try:
+        owner_email = fields['service_owner']['email']
+    except TypeError:
+        owner_email = None
+    if owner_email is not None:
+        o_email = config.creg2dp_email.get(owner_email,owner_email)
+        owner_uid = email2puid.get(o_email, None)
+        #    if owner_uid is None:
+        #        owner_uid = utils.fixContact(site, fields, contact_type='security')
+        if owner_uid is None:
+            logger.warning("'%s' not found - no service owner set for '%s'" \
+                           % (owner_email, title))
+        else:
+            fields['service_owner'] = owner_uid
         
     return fields.copy()
 
