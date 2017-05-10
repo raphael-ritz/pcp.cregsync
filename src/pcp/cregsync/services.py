@@ -39,8 +39,11 @@ def preparedata(values, site, additional_org, email2puid):
     fields['service_complete_link'] = scl
     fields['identifiers'] = identifiers
     # link contacts
-    contact_url = fields['contact_information']['links']['self']
-    if contact_url:
+    try:
+        contact_url = fields['contact_information']['links']['self']
+    except TypeError:
+        contact_url = None
+    if contact_url is not None:
         # first map exceptions
         contact_data = utils.getDataFromSPMT(contact_url)
         contact_email = contact_data['external_contact_information']['email']
