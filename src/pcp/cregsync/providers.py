@@ -101,7 +101,7 @@ def main(app):
         targetfolder[id].edit(**data)
         targetfolder[id].reindexObject()
         site.portal_repository.save(obj=targetfolder[id], 
-                                    comment="Syncronization from Central Registry")
+                                    comment="Synchronization from Central Registry")
         logger.info("Updated %s in the providers folder" % id)
 
     if not args.dry:
