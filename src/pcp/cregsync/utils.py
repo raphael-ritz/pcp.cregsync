@@ -1,3 +1,4 @@
+from __future__ import print_function
 import csv
 import json
 import logging
@@ -20,22 +21,22 @@ def getArgParser():
     parser = argparse.ArgumentParser(description='The cregsync package provides scripts to '\
                                      'transfer data from the central registry to '\
                                      'the data project coordination portal.')
-    parser.add_argument("-s", "--site_id", default="pcp", 
+    parser.add_argument("-s", "--site_id", default="pcp",
                         help="internal id of the Plone site object (default: 'pcp')")
-    parser.add_argument("-p", "--path", default="data/GOCDB/20160726/", 
+    parser.add_argument("-p", "--path", default="data/GOCDB/20160726/",
                         help="relative path to the input data directory "\
                         "(default: 'data/GOCDB/20160726/')")
-    parser.add_argument("-f", "--filename", default="", 
+    parser.add_argument("-f", "--filename", default="",
                         help="name of the input data file "\
                         "(default: '' - aka not set)")
-    parser.add_argument("-a", "--admin_id", default="creg", 
+    parser.add_argument("-a", "--admin_id", default="creg",
                         help="all changes and additions will be shown as from this user"\
                         " (default: 'creg')")
     parser.add_argument("-t", "--top", action='store_true',
                         help="Sync only the top-level service - no details")
     parser.add_argument("-d", "--dry", action='store_true',
                         help="dry run aka nothing is saved to the database")
-    parser.add_argument("-c", "--command", 
+    parser.add_argument("-c", "--command",
                         help="name of the script invoked. Set automatically. It is here"\
                         "to keep the 'argparse' module happy")
     return parser
@@ -72,14 +73,14 @@ def getSite(app, site_id, admin_id):
     site = app.get(site_id, None)
 
     if site is None:
-        print "'%s' not found (maybe a typo?)." % site_id
-        print "To create a site call 'import_structure' first."
+        print("'%s' not found (maybe a typo?)." % site_id)
+        print("To create a site call 'import_structure' first.")
         raise ValueError
 
     setSite(site)  # enable lookup of local components
 
     return site
-    
+
 
 def getData(path, filename):
     """return a DictReader to iterate over the data"""
@@ -94,7 +95,7 @@ def getServiceData(path, filename):
 
 def getProperties(path, filename):
     """
-    Return a dict keyed by creg:service id pointing to a 
+    Return a dict keyed by creg:service id pointing to a
     list of dicts with the additional kv pairs.
     """
     source = open(path+filename,'r')
@@ -103,7 +104,7 @@ def getProperties(path, filename):
     for line in reader:
         result[line[-1]].append(dict(key=line[1],value=line[2]))
     return result
-    
+
 def email2puid(site):
     """
     Return a mapping email -> UID for all exisitng Person objects.
@@ -159,7 +160,7 @@ def makeGenericContact(site, fields, contact_type='generic'):
     logger.info("Updated %s in the people folder" % id)
     site.people[id].reindexObject()
     return site.people[id].UID()
-    
+
 
 def fixContact(site, fields, contact_type='generic'):
     """
@@ -197,7 +198,7 @@ def update(old, item):
         if entry['key'] == k:
             entry['value'] = v
     return old
-        
+
 
 def extend(old, new):
     """Helper method to extend a list of dicts such that the
@@ -218,7 +219,7 @@ def extend(old, new):
 def resolveServiceType(id):
     """Look up the service types from the config"""
     return config.servicetypes[id]
-                
+
 def resolve_creg_id(sid, portal_type, context):
     catalog = context.portal_catalog
     items = [e.getObject() for e in catalog(portal_type=portal_type)]
@@ -235,17 +236,17 @@ def resolve_creg_id(sid, portal_type, context):
 def prepare_links(clinks, context):
     """Helper method turning the RS2RSC link table from creg
     into a dict keyed by RS uid holding a list of target RSC uids.
-    Objects to be linked have to exist already. 
+    Objects to be linked have to exist already.
     """
     result = defaultdict(list)
     for entry in clinks:
         rs_uid = resolve_creg_id(entry['SERVICEGROUP_ID'], 'RegisteredService', context)
         if rs_uid is None:
-            print "No registered service with creg_id = '%s' found." % entry['SERVICEGROUP_ID']
+            print("No registered service with creg_id = '%s' found." % entry['SERVICEGROUP_ID'])
             continue
         rsc_uid = resolve_creg_id(entry['SERVICE_ID'], 'RegisteredServiceComponent', context)
         if rsc_uid is None:
-            print "No registered service component with creg_id = '%s' found." % entry['SERVICE_ID']
+            print("No registered service component with creg_id = '%s' found." % entry['SERVICE_ID'])
             continue
         result[rs_uid].append(rsc_uid)
     return result.copy()
@@ -261,7 +262,7 @@ def getDataFromSPMT(url):
     """Returns the payload from url or None.
     Never fails."""
     if 'localhost' in url:
-        url = url.replace('localhost', SPMT_BASE)  
+        url = url.replace('localhost', SPMT_BASE)
     r = requests.get(url)
     d = json.loads(r.content)
     try:
